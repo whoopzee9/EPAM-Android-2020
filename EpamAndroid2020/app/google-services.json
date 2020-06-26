@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "345457266394",
+    "firebase_url": "https://epam-android-2020.firebaseio.com",
+    "project_id": "epam-android-2020",
+    "storage_bucket": "epam-android-2020.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345457266394:android:af8f74d8ed4929c7d39fe3",
+        "android_client_info": {
+          "package_name": "com.university.epam_android_2020"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "345457266394-sfj29ihim3rii2hlqh2d8o0rfdffpdap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb0uhR5M1Sm2WgfQpTMHJYe6vYTSZdUQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "345457266394-sfj29ihim3rii2hlqh2d8o0rfdffpdap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:345457266394:android:a6967ea3fc8c2b5dd39fe3",
+        "android_client_info": {
+          "package_name": "com.university.timer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "345457266394-sfj29ihim3rii2hlqh2d8o0rfdffpdap.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCb0uhR5M1Sm2WgfQpTMHJYe6vYTSZdUQs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "345457266394-sfj29ihim3rii2hlqh2d8o0rfdffpdap.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

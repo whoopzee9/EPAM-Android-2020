@@ -1,4 +1,4 @@
-package com.university.epam_android_2020
+package com.university.epam_android_2020.models
 
 public class User {
     val id:String?

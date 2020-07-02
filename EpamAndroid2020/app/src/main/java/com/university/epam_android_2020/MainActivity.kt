@@ -2,6 +2,8 @@ package com.university.epam_android_2020
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -9,14 +11,15 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.university.epam_android_2020.models.User
+import com.university.epam_android_2020.services.ForegroundService
 import com.university.epam_android_2020.viewmodels.MainActivityViewModel
-import java.util.jar.Manifest
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var textName: EditText
@@ -48,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         if (ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION), 100)
+        } else {
+            startService()
         }
     }
 
@@ -56,7 +61,23 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults[0] == Activity.RESULT_OK) {
+            checkPermissions()
+        } else {
+            val toast: Toast = Toast.makeText(applicationContext, "No permissions!", Toast.LENGTH_LONG)
+            toast.show()
+        }
+    }
+
+    fun startService() {
+        val serviceIntent = Intent(this, ForegroundService::class.java)
+        serviceIntent.putExtra("inputExtra", "GPS usage in foreground")
+        ContextCompat.startForegroundService(this, serviceIntent)
+    }
+
+    fun stopService() {
+        val serviceIntent = Intent(this, ForegroundService::class.java)
+        stopService(serviceIntent)
     }
 
     fun onClickSaveButton(view: View) {

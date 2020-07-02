@@ -22,4 +22,8 @@ class MyLocationListener :LocationListener {
     override fun onProviderDisabled(provider: String?) {
         TODO("Not yet implemented")
     }
+
+    fun setLocationListenerInterface(value: LocationListenerInterface) {
+        locationListenerInterface = value
+    }
 }

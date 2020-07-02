@@ -5,7 +5,7 @@ import android.location.LocationListener
 import android.os.Bundle
 
 class MyLocationListener :LocationListener {
-    private var locationListenerInterface: LocationListenerInterface? = null
+    var locationListenerInterface: LocationListenerInterface? = null
 
     override fun onLocationChanged(location: Location?) {
         locationListenerInterface?.onLocationChanged(location)
@@ -21,9 +21,5 @@ class MyLocationListener :LocationListener {
 
     override fun onProviderDisabled(provider: String?) {
         TODO("Not yet implemented")
-    }
-
-    fun setLocationListenerInterface(value: LocationListenerInterface) {
-        locationListenerInterface = value
     }
 }

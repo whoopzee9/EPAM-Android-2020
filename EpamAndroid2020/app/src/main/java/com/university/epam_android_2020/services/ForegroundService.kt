@@ -27,7 +27,7 @@ class ForegroundService: Service(), LocationListenerInterface {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val input = intent!!.getStringExtra("inputExtra")
-        myLocationListener.setLocationListenerInterface(this)
+        myLocationListener.locationListenerInterface = this
         createNotificationChannel()
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
@@ -85,5 +85,6 @@ class ForegroundService: Service(), LocationListenerInterface {
 
     override fun onLocationChanged(location: Location?) {
         TODO("Not yet implemented")
+
     }
 }

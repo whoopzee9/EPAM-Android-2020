@@ -20,7 +20,7 @@
             android:enabled="true"
             android:exported="true" />
 
-		<activity android:name=".GroupActivity"></activity>
+		<activity android:name=".GroupActivity"/>
 
 		<meta-data
             android:name="com.google.android.geo.API_KEY"

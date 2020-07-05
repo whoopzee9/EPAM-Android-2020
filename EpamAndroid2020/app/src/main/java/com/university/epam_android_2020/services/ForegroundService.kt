@@ -22,11 +22,12 @@ import com.university.epam_android_2020.MainActivity as MainActivity
 class ForegroundService: Service(), LocationListenerInterface {
 
     private val CHANNEL_ID = "ForegroundServiceChannel"
-    private var locationManager: LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private lateinit var locationManager: LocationManager
     private val myLocationListener: MyLocationListener = MyLocationListener()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val input = intent!!.getStringExtra("inputExtra")
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         myLocationListener.locationListenerInterface = this
         createNotificationChannel()
         val notificationIntent = Intent(this, MainActivity::class.java)
@@ -45,17 +46,37 @@ class ForegroundService: Service(), LocationListenerInterface {
         //do heavy work on a background thread
         //stopSelf();
 
+        println("started!! ${ActivityCompat.checkSelfPermission(applicationContext,
+            Manifest.permission.ACCESS_COARSE_LOCATION)}, ${ActivityCompat.checkSelfPermission(applicationContext,
+            Manifest.permission.ACCESS_FINE_LOCATION)}")
+
+        if (ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+            val toast: Toast = Toast.makeText(applicationContext, "No permissions(foreground fine)!", Toast.LENGTH_LONG)
+            toast.show()
+        }
+
+        if (ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+            val toast: Toast = Toast.makeText(applicationContext, "No permissions(foreground coarse)!", Toast.LENGTH_LONG)
+            toast.show()
+        }
+
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2, 1F, myLocationListener)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0F, myLocationListener)
         } else {
-            val toast: Toast = Toast.makeText(applicationContext, "No permissions!", Toast.LENGTH_LONG)
+            val toast: Toast = Toast.makeText(applicationContext, "No permissions(foreground)!", Toast.LENGTH_LONG)
             toast.show()
         }
 
@@ -84,7 +105,6 @@ class ForegroundService: Service(), LocationListenerInterface {
     }
 
     override fun onLocationChanged(location: Location?) {
-        TODO("Not yet implemented")
-
+        println("location changed to ${location!!.latitude} , ${location.longitude}")
     }
 }

@@ -3,11 +3,11 @@ package com.university.epam_android_2020.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.university.epam_android_2020.models.User
+import com.university.epam_android_2020.models.MapOfUsers
 import com.university.epam_android_2020.repositories.GroupRepository
 
 class MainActivityViewModel:ViewModel() {
-    lateinit var group:MutableLiveData<List<User>>
+    var group:MutableLiveData<MapOfUsers> = MutableLiveData()
     lateinit var repository:GroupRepository
 
     fun init() {
@@ -18,8 +18,12 @@ class MainActivityViewModel:ViewModel() {
         group = repository.getGroupFromDB()
     }
 
-    fun getGroup():LiveData<List<User>> {
+    fun getGroup():LiveData<MapOfUsers> {
         return group
+    }
+
+    fun setGroup(data: MapOfUsers) {
+        group.value = data
     }
 
 }

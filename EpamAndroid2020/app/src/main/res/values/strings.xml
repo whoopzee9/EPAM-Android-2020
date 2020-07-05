@@ -6,4 +6,7 @@
     <string name="btn_save">SAVE</string>
     <string name="btn_read">READ</string>
     <string name="text_name">Name</string>
+	<string name="title_activity_display_map">Map</string>
+	<string name="title">Title</string>
+    <string name="google_maps_key">AIzaSyDHhJemdxH2add8n7voudQ_rY24ahouCy8</string>
 </resources>

@@ -1,113 +1,64 @@
 package com.university.epam_android_2020
 
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.university.epam_android_2020.models.User
-import com.university.epam_android_2020.services.ForegroundService
-import com.university.epam_android_2020.viewmodels.MainActivityViewModel
+import android.os.Bundle
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.university.epam_android_2020.models.MapOfUsers
+import kotlinx.android.synthetic.main.activity_main.*
 
+const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var textName: EditText
-    private lateinit var textSecondName: EditText
-    private lateinit var textEmail: EditText
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var mMap: GoogleMap
+    private lateinit var map: MapOfUsers
 
-    private lateinit var myDataBase: DatabaseReference;
-    private val USER_KEY: String = "User"
-    private val mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+    //redo
+    companion object{
+        private var isFirstStart = true
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        init()
-    }
 
-    private fun init() {
-        textName = findViewById(R.id.text_name)
-        textSecondName = findViewById(R.id.text_second_name)
-        textEmail = findViewById(R.id.text_email)
-        myDataBase = FirebaseDatabase.getInstance().getReference(USER_KEY)
-
-        mainActivityViewModel.init()
-
-        mainActivityViewModel.getGroup().observe(this, Observer {  }) //TODO Observe
-    }
-
-    private fun checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION), 100)
+        if (isFirstStart) {
+            isFirstStart = false
+            val intent = Intent(this@MainActivity, GroupActivity::class.java)
+            startActivity(intent)
         } else {
-            startService()
+            map = intent.getSerializableExtra(EXTRA_USER_MAP) as MapOfUsers
+
+            supportActionBar?.title = map.name
+
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+
+            menuButton.setOnClickListener {
+                val intent = Intent(this@MainActivity, GroupActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == 100 && grantResults[0] == Activity.RESULT_OK) {
-            checkPermissions()
-        } else {
-            val toast: Toast = Toast.makeText(applicationContext, "No permissions!", Toast.LENGTH_LONG)
-            toast.show()
-        }
-    }
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
 
-    fun startService() {
-        val serviceIntent = Intent(this, ForegroundService::class.java)
-        serviceIntent.putExtra("inputExtra", "GPS usage in foreground")
-        ContextCompat.startForegroundService(this, serviceIntent)
-    }
-
-    fun stopService() {
-        val serviceIntent = Intent(this, ForegroundService::class.java)
-        stopService(serviceIntent)
-    }
-
-    fun onClickSaveButton(view: View) {
-        val id: String? = myDataBase.key
-        val name = textName.text.toString()
-        val secName = textSecondName.text.toString()
-        val email = textEmail.text.toString()
-        val newUser = User(
-            id,
-            name,
-            secName,
-            email
-        )
-        if (name.isNotEmpty() && secName.isNotEmpty() && email.isNotEmpty()) {
-            myDataBase.push().setValue(newUser)
-            Toast.makeText(this, "Сохранено", Toast.LENGTH_SHORT).show()
-            clearFields();
-        } else {
-            Toast.makeText(this, "Проверьте поля", Toast.LENGTH_SHORT).show()
+        val boundsBuilder = LatLngBounds.Builder()
+        for (place in map.places) {
+            val latLng = LatLng(place.latitude, place.longitude)
+            boundsBuilder.include(latLng)
+            mMap.addMarker(MarkerOptions().position(latLng).title(place.title))
         }
 
-    }
-
-    private fun clearFields() {
-        textName.setText("")
-        textSecondName.setText("")
-        textEmail.setText("")
-    }
-
-    fun onClickReadButton(view: View) {
-
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 1000, 1000, 0))
     }
 }

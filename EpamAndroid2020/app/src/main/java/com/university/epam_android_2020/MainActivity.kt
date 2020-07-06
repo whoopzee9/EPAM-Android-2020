@@ -1,58 +1,127 @@
 package com.university.epam_android_2020
 
-import android.os.Bundle
-import android.view.View
-import android.widget.EditText
-import android.widget.Toast
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import android.os.Bundle
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.university.epam_android_2020.models.MapOfUsers
+import com.university.epam_android_2020.services.ForegroundService
+import com.university.epam_android_2020.viewmodels.MainActivityViewModel
+import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var textName: EditText
-    private lateinit var textSecondName: EditText
-    private lateinit var textEmail: EditText
+const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 
-    private lateinit var myDataBase: DatabaseReference;
-    private val USER_KEY: String = "User"
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var mMap: GoogleMap
+    //private lateinit var map: MapOfUsers
+    private lateinit var mainActivityViewModel: MainActivityViewModel
 
+    //redo
+    companion object{
+        private var isFirstStart = true
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        init()
-    }
 
-    private fun init() {
-        textName = findViewById(R.id.text_name)
-        textSecondName = findViewById(R.id.text_second_name)
-        textEmail = findViewById(R.id.text_email)
-        myDataBase = FirebaseDatabase.getInstance().getReference(USER_KEY)
-    }
+        mainActivityViewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
-    fun onClickSaveButton(view: View) {
-        val id: String? = myDataBase.key
-        val name = textName.text.toString()
-        val secName = textSecondName.text.toString()
-        val email = textEmail.text.toString()
-        val newUser = User(id, name, secName, email)
-        if (name.isNotEmpty() && secName.isNotEmpty() && email.isNotEmpty()) {
-            myDataBase.push().setValue(newUser)
-            Toast.makeText(this, "Сохранено", Toast.LENGTH_SHORT).show()
-            clearFields();
+        mainActivityViewModel.init()
+
+        mainActivityViewModel.getGroup().observe(this, Observer {  }) //TODO Observe
+
+        checkPermissions()
+
+        if (isFirstStart) {
+            isFirstStart = false
+            val intent = Intent(this, GroupActivity::class.java)
+            startActivity(intent)
         } else {
-            Toast.makeText(this, "Проверьте поля", Toast.LENGTH_SHORT).show()
+            val mapNew = intent.getSerializableExtra(EXTRA_USER_MAP) as MapOfUsers
+
+            mainActivityViewModel.setGroup(mapNew)
+
+            supportActionBar?.title = mapNew.name
+
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            val mapFragment =
+                supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+            mapFragment.getMapAsync(this)
+
+            menuButton.setOnClickListener {
+                val intent = Intent(this, GroupActivity::class.java)
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ), 100)
+        } else {
+            startService()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        println("request code = ${requestCode}, ${grantResults[0]}, ${permissions[0]},${permissions[1]}")
+        if (requestCode == 100 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            checkPermissions()
+        } else {
+            val toast: Toast = Toast.makeText(applicationContext, "No no no no permissions! ${grantResults[0]}", Toast.LENGTH_LONG)
+            toast.show()
+        }
+    }
+
+    fun startService() {
+        val serviceIntent = Intent(this, ForegroundService::class.java)
+        serviceIntent.putExtra("inputExtra", "GPS usage in foreground")
+        ContextCompat.startForegroundService(this, serviceIntent)
+    }
+
+    fun stopService() {
+        val serviceIntent = Intent(this, ForegroundService::class.java)
+        stopService(serviceIntent)
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
+
+        val boundsBuilder = LatLngBounds.Builder()
+        val map:MapOfUsers? = mainActivityViewModel.getGroup().value
+        for (place in map!!.places) {
+            val latLng = LatLng(place.latitude, place.longitude)
+            boundsBuilder.include(latLng)
+            mMap.addMarker(MarkerOptions().position(latLng).title(place.title))
         }
 
-    }
-
-    private fun clearFields() {
-        textName.setText("")
-        textSecondName.setText("")
-        textEmail.setText("")
-    }
-
-    fun onClickReadButton(view: View) {
-
+        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 1000, 1000, 0))
     }
 }

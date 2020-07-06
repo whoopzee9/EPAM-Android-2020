@@ -26,7 +26,7 @@ class GroupActivity : AppCompatActivity() {
             override fun onItemClick(position: Int) {
                 val intent = Intent(this@GroupActivity, MainActivity::class.java)
                 intent.putExtra(EXTRA_USER_MAP, maps[position])
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP;
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
             }
         })

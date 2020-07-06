@@ -8,18 +8,19 @@ class MyLocationListener :LocationListener {
     var locationListenerInterface: LocationListenerInterface? = null
 
     override fun onLocationChanged(location: Location?) {
+        println("location changed!")
         locationListenerInterface?.onLocationChanged(location)
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        TODO("Not yet implemented")
+        println("status changed!")
     }
 
     override fun onProviderEnabled(provider: String?) {
-        TODO("Not yet implemented")
+        println("provider enabled!")
     }
 
     override fun onProviderDisabled(provider: String?) {
-        TODO("Not yet implemented")
+        println("provider disabled!")
     }
 }

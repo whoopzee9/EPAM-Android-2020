@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "345457266394-f08laapkkdfi8srlt05avojpuggilggp.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.university.epam_android_2020",
-            "certificate_hash": "dacf9f6c9e1026dfc226de3247db9fa979d5ec1a"
-          }
-        },
-        {
           "client_id": "345457266394-sfj29ihim3rii2hlqh2d8o0rfdffpdap.apps.googleusercontent.com",
           "client_type": 3
         }

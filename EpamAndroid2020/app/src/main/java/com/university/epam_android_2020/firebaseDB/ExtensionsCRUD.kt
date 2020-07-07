@@ -1,28 +1,27 @@
 package com.university.epam_android_2020.firebaseDB
 
-import com.google.firebase.auth.FirebaseAuth
+import com.university.epam_android_2020.user_data.Gps
 import com.university.epam_android_2020.user_data.User
 
 interface ExtensionsCRUD {
-    fun setAuth(): FirebaseAuth?;
+
+    fun setLocation(longitude: Double, latitude: Double)
+    fun getLocation(callBack: (Gps?) -> Unit)
+
+    fun createPath(path: String)
+    fun createGroup(groupName: String)
+    fun joinToGroup(groupName: String)
 
     fun createData(value: String?, path: String)
 
-    fun createUser(path: String, user: User)
-
-    fun setLocation(longitude:Double, latitude:Double)
-    fun getLocation():String?
-
-    //CRUD
-    fun createPath(path: String)
-    fun createGroup(groupName: String)
-
-    fun joinToGroup(groupName: String)
-
-    fun readUserData(path: String): User?
+    fun createUser(userData: User)
+    fun getUserData(callBack: (User?) -> Unit)
+    fun getAllUsers(callBack: (MutableList<User?>) -> Unit)
+    fun deleteUserData(userPath: String)
 
     fun updateData(value: String?, path: String)
 
-    fun deleteData(value: String?, path: String)
-
+    fun deleteFromGroup(groupName: String?)
+    fun deleteFromAllGroups(userID:String)
+    fun getUsersFromGroup(groupName: String, callBack: (MutableList<User?>)->Unit)
 }

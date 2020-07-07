@@ -32,7 +32,8 @@ class AuthActivity : AppCompatActivity() {
 
         val currentUser = mAuth.currentUser
         if (currentUser != null) {
-            val intent = Intent(this, GroupActivity::class.java)
+           // val intent = Intent(this, GroupActivity::class.java)
+            val intent = Intent(this, AuthCompleteActivity::class.java)
             startActivity(intent)
         }
     }

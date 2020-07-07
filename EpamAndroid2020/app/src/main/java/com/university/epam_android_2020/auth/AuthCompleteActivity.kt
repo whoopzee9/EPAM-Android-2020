@@ -52,10 +52,10 @@ class AuthCompleteActivity : AppCompatActivity() {
     }
 
     fun onCLickAdd(view: View) {
-        /*  myRef = FirebaseDatabase.getInstance().getReference("USERS/" + user!!.uid + "/gps")
-          myRef!!.push().setValue(Gps("11;20", 34.44, 45.66))*/
+
         if (etTextField!!.text.isNotEmpty()) {
-            mFirebaseDB.createData(etTextField!!.text.toString(), "test")
+            mFirebaseDB.createData(etTextField!!.text.toString(), "test/tedt/test")
+
         }
 
     }
@@ -66,8 +66,10 @@ class AuthCompleteActivity : AppCompatActivity() {
     }
 
     fun onCLickRead(view: View) {
-        val user: User? = mFirebaseDB.readUserData(user!!.uid)
-        println("USER $user")
+/*        val user: User? = mFirebaseDB.readUserData(user!!.uid)
+        println("USER $user")*/
+        //mFirebaseDB.readUserData(user!!.uid) {printUserFromData(it)}
+        mFirebaseDB.getAllUsers { printUserFromData(it) }
 
     }
 
@@ -78,15 +80,57 @@ class AuthCompleteActivity : AppCompatActivity() {
 
     }
 
-    fun onCLickDelete(view: View) {}
-    fun onClickAddGroup(view: View) {
-        //mFirebaseDB.createGroup(etTextInput!!.text.toString())
-        //mFirebaseDB.joinToGroup("ROOM6")
+    fun onCLickDelete(view: View) {
+        mFirebaseDB.deleteUserData("0MdOWT14PrP6eESIOtqOQ93REA62")
     }
-    fun onClickReadSimple(view: View) {
-      val x =  mFirebaseDB.simpleRead(user!!.uid, etTextField)
-        println("INTO: $x")
 
-       mFirebaseDB.simpleRead2(user!!.uid) { print(it)}
+    fun onClickAddGroup(view: View) {
+        mFirebaseDB.createGroup(etTextInput!!.text.toString())
+
+    }
+
+    fun onClickReadSimple(view: View) {
+
+    }
+
+    private fun printUserFromData(user: MutableList<User?>) {
+        for (item in user) {
+            println("FROM USER DATA $item")
+        }
+    }
+
+    fun onClickGpsSet(view: View) {
+        mFirebaseDB.setLocation(111.3, 5.12)
+    }
+
+    fun onClickGpsGet(view: View) {
+        mFirebaseDB.getLocation { printGps(it) }
+    }
+
+    private fun printGps(it: Gps?) {
+        println(it)
+    }
+
+    fun onClickFindInGroup(view: View) {
+        mFirebaseDB.getUsersFromGroup(etTextInput!!.text.toString()) { printFind(it) }
+    }
+
+    private fun printFind(it: MutableList<User?>) {
+        for (item in it) {
+            println(item)
+        }
+    }
+
+    fun onClickDeleteFromOneGroup(view: View) {
+        mFirebaseDB.deleteFromGroup(etTextInput!!.text.toString())
+    }
+
+    fun onClickDeleteFromAllGroups(view: View) {
+        mFirebaseDB.deleteFromAllGroups(user!!.uid)
+    }
+
+    fun onClickJoinGroup(view: View) {
+        mFirebaseDB.joinToGroup(etTextInput!!.text.toString())
+
     }
 }

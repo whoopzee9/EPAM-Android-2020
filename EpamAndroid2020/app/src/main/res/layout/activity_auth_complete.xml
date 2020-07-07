@@ -4,7 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AuthCompleteActivity">
+    tools:context=".auth.AuthCompleteActivity">
+
+    <Button
+        android:id="@+id/btn_gps_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="onClickGpsSet"
+        android:text="GPS SET"
+        app:layout_constraintEnd_toStartOf="@+id/btn_log_out6"
+        app:layout_constraintStart_toEndOf="@+id/btn_gps_get"
+        app:layout_constraintTop_toBottomOf="@+id/btn_read" />
+
+    <Button
+        android:id="@+id/btn_log_out6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="EMPTY"
+        app:layout_constraintEnd_toStartOf="@+id/btn_log_out"
+        app:layout_constraintStart_toEndOf="@+id/btn_gps_set"
+        app:layout_constraintTop_toBottomOf="@+id/btn_read" />
 
     <Button
         android:id="@+id/btn_read"
@@ -42,7 +63,7 @@
         android:id="@+id/et_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="120dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -53,7 +74,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:onClick="onClickTest"
-        android:text="TEST"
+        android:text="ADD USER"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btn_read_simple"
         app:layout_constraintTop_toBottomOf="@+id/et_field_input" />
@@ -66,6 +87,17 @@
         android:onClick="onClickAddGroup"
         android:text="ADD GROUP"
         app:layout_constraintEnd_toStartOf="@+id/btn_read_simple"
+        app:layout_constraintStart_toEndOf="@+id/btn_join_group"
+        app:layout_constraintTop_toBottomOf="@+id/et_field_input" />
+
+    <Button
+        android:id="@+id/btn_join_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="onClickJoinGroup"
+        android:text="JOIN GR"
+        app:layout_constraintEnd_toStartOf="@+id/btn_add_grop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_field_input" />
 
@@ -98,6 +130,15 @@
         android:onClick="onClickSignOut"
         android:text="LOG OUT"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_read" />
+
+    <Button
+        android:id="@+id/btn_gps_get"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:onClick="onClickGpsGet"
+        android:text="GPS GET"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_read" />
 
@@ -123,4 +164,37 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_field_text" />
+
+    <Button
+        android:id="@+id/btn_group_find"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="FIND IN GR"
+        android:onClick="onClickFindInGroup"
+        app:layout_constraintEnd_toStartOf="@+id/btn_group_delete_one"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_gps_set" />
+
+    <Button
+        android:id="@+id/btn_group_delete_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="DEL FROm 1 GR"
+        android:onClick="onClickDeleteFromOneGroup"
+        app:layout_constraintEnd_toStartOf="@+id/btn_group_find3"
+        app:layout_constraintStart_toEndOf="@+id/btn_group_find"
+        app:layout_constraintTop_toBottomOf="@+id/btn_gps_set" />
+
+    <Button
+        android:id="@+id/btn_group_find3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="DEL FROM ALL"
+        android:onClick="onClickDeleteFromAllGroups"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_group_delete_one"
+        app:layout_constraintTop_toBottomOf="@+id/btn_gps_set" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -9,6 +9,6 @@ data class User(
 ) {
 
     override fun toString(): String {
-        return "User(id=$id, name=$name, email=$email, photo=$photo, gps=$gps)"
+        return "User(id=$id \n name=$name \n email=$email \n photo=$photo \n gps=$gps \n)"
     }
 }

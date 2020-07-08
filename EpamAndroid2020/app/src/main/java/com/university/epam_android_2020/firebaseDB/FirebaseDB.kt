@@ -51,6 +51,33 @@ class FirebaseDB : ExtensionsCRUD {
         }
     }
 
+
+    /**
+     * Gets all groups
+     *
+     * @param callBack Returned callback param of type MutableList<String?>
+     * @return callback Return class MutableList<String?> with list of groups.
+     */
+    override fun getAllGroups(callBack: (MutableList<String?>) -> Unit) {
+        val grList:MutableList<String?> = mutableListOf()
+        groupsRef
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (item in snapshot.children) {
+                            grList.add(item.key)
+                        }
+                        callBack(grList)
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Failed to read value
+                }
+            })
+    }
+
     /**
      * Adds a new user to the database.
      *

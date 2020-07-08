@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.NotificationCompat
+import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.gps.LocationListenerInterface
 import com.university.epam_android_2020.gps.MyLocationListener
 import com.university.epam_android_2020.MainActivity as MainActivity
@@ -24,6 +25,7 @@ class ForegroundService: Service(), LocationListenerInterface {
     private val CHANNEL_ID = "ForegroundServiceChannel"
     private lateinit var locationManager: LocationManager
     private val myLocationListener: MyLocationListener = MyLocationListener()
+    private val mFirebaseDB = FirebaseDB()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val input = intent!!.getStringExtra("inputExtra")
@@ -106,5 +108,6 @@ class ForegroundService: Service(), LocationListenerInterface {
 
     override fun onLocationChanged(location: Location?) {
         println("location changed to ${location!!.latitude} , ${location.longitude}")
+        mFirebaseDB.setLocation(location!!.longitude, location.latitude)
     }
 }

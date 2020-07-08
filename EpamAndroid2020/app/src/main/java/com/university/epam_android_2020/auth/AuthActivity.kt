@@ -33,7 +33,7 @@ class AuthActivity : AppCompatActivity() {
         val currentUser = mAuth.currentUser
         if (currentUser != null) {
            // val intent = Intent(this, GroupActivity::class.java)
-            val intent = Intent(this, AuthCompleteActivity::class.java)
+            val intent = Intent(this, GroupActivity::class.java)
             startActivity(intent)
         }
     }
@@ -57,7 +57,7 @@ class AuthActivity : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(this, " Good!", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this, AuthCompleteActivity::class.java)
+                        val intent = Intent(this, GroupActivity::class.java)
                         startActivity(intent)
                     } else {
                         Toast.makeText(this, "Auth failed!", Toast.LENGTH_SHORT)

@@ -3,26 +3,41 @@ package com.university.epam_android_2020.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.university.epam_android_2020.models.MapOfUsers
 import com.university.epam_android_2020.repositories.GroupRepository
+import com.university.epam_android_2020.user_data.CurrentGroup
+import com.university.epam_android_2020.user_data.Group
 
 class MainActivityViewModel:ViewModel() {
-    var group:MutableLiveData<MapOfUsers> = MutableLiveData()
-    lateinit var repository:GroupRepository
+    var group:MutableLiveData<Group> = MutableLiveData()
+    var repository = GroupRepository.instance
 
     fun init() {
-        if(group != null){
-            return;
-        }
-        repository = GroupRepository().instance!!
-        group = repository.getGroupFromDB()
+        //repository = GroupRepository.instance
+        group = MutableLiveData()
+        /*repository.getGroupFromDB {
+            val currGroup = CurrentGroup.instance
+            val tmp = Group(currGroup.groupName, it)
+            group.postValue(tmp)
+        }*/
+        updateGroup()
+
     }
 
-    fun getGroup():LiveData<MapOfUsers> {
+    fun getGroup():LiveData<Group> {
         return group
     }
 
-    fun setGroup(data: MapOfUsers) {
+    fun updateGroup() {
+        println("before updating group")
+        repository.getGroupFromDB {
+            println("updating group")
+            val currGroup = CurrentGroup.instance
+            val tmp = Group(currGroup.groupName, it)
+            group.postValue(tmp)
+        }
+    }
+
+    fun setGroup(data: Group) {
         group.value = data
     }
 

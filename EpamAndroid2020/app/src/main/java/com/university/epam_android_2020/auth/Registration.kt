@@ -7,6 +7,10 @@ import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.university.epam_android_2020.R
+import com.university.epam_android_2020.firebaseDB.FirebaseDB
+import com.university.epam_android_2020.user_data.Gps
+import com.university.epam_android_2020.user_data.User
+import java.util.*
 
 class Registration : AppCompatActivity() {
     private var etRegEmail: EditText? = null
@@ -16,6 +20,7 @@ class Registration : AppCompatActivity() {
 
     //Firebase references
     private var mAuth: FirebaseAuth? = null
+    private val mFirebaseDB = FirebaseDB()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +40,8 @@ class Registration : AppCompatActivity() {
     }
 
     fun onClickSubmit(view: View) {
-        if (/*etName?.text!!.isNotEmpty()
-            &&*/ etRegEmail?.text!!.isNotEmpty()
+        if (etName?.text!!.isNotEmpty()
+            && etRegEmail?.text!!.isNotEmpty()
             && etRegPassword?.text!!.isNotEmpty()
             && etRegConfPassword?.text!!.isNotEmpty()
             && (etRegPassword?.text!!.toString().equals(etRegConfPassword?.text!!.toString()))
@@ -48,6 +53,11 @@ class Registration : AppCompatActivity() {
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val user = mAuth!!.currentUser
+                        val userData = User(
+                            user!!.uid, etName!!.text.toString(), user.email, "http",
+                            Gps("${Calendar.getInstance().time}", 0.0, 0.0)
+                        )
+                        mFirebaseDB.createUser(userData)
                         Toast.makeText(this, "Success registration", Toast.LENGTH_SHORT).show()
                         sendEmailVerification();
                         finish()

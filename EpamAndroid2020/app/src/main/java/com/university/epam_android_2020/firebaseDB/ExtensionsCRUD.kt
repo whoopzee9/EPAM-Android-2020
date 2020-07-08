@@ -11,6 +11,7 @@ interface ExtensionsCRUD {
     fun createPath(path: String)
     fun createGroup(groupName: String)
     fun joinToGroup(groupName: String)
+    fun getAllGroups(callBack: (MutableList<String?>)->Unit)
 
     fun createData(value: String?, path: String)
 

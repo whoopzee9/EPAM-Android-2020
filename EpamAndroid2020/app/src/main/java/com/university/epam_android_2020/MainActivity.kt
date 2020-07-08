@@ -18,8 +18,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
-import com.university.epam_android_2020.models.MapOfUsers
 import com.university.epam_android_2020.services.ForegroundService
+import com.university.epam_android_2020.user_data.Group
 import com.university.epam_android_2020.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -43,16 +43,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mainActivityViewModel.init()
 
-        mainActivityViewModel.getGroup().observe(this, Observer {  }) //TODO Observe
-
         checkPermissions()
 
-        if (isFirstStart) {
+        /*if (isFirstStart) {
             isFirstStart = false
             val intent = Intent(this, GroupActivity::class.java)
             startActivity(intent)
-        } else {
-            val mapNew = intent.getSerializableExtra(EXTRA_USER_MAP) as MapOfUsers
+        } else {*/
+            val mapNew = intent.getParcelableExtra(EXTRA_USER_MAP) as Group
 
             mainActivityViewModel.setGroup(mapNew)
 
@@ -67,7 +65,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 val intent = Intent(this, GroupActivity::class.java)
                 startActivity(intent)
             }
-        }
+        //}
+
+        Thread {
+            while (true) {
+                Thread.sleep(2000)
+                println("thread!!")
+                mainActivityViewModel.updateGroup()
+            }
+        }.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService()
     }
 
     private fun checkPermissions() {
@@ -114,14 +125,30 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        mainActivityViewModel.getGroup().observe(this, Observer {
+            println("observing")
+            updateMap() }) //TODO move it elsewhere
+
         val boundsBuilder = LatLngBounds.Builder()
-        val map:MapOfUsers? = mainActivityViewModel.getGroup().value
-        for (place in map!!.places) {
-            val latLng = LatLng(place.latitude, place.longitude)
+        val map:Group? = mainActivityViewModel.getGroup().value
+        for (place in map!!.members) {
+            val latLng = LatLng(place!!.gps.latitude, place.gps.longitude)
             boundsBuilder.include(latLng)
-            mMap.addMarker(MarkerOptions().position(latLng).title(place.title))
+            mMap.addMarker(MarkerOptions().position(latLng).title(place.name))
         }
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 1000, 1000, 0))
+    }
+
+    private fun updateMap() {
+        mMap.clear()
+        println("updating map")
+        val boundsBuilder = LatLngBounds.Builder()
+        val map:Group? = mainActivityViewModel.getGroup().value
+        for (place in map!!.members) {
+            val latLng = LatLng(place!!.gps.latitude, place.gps.longitude)
+            boundsBuilder.include(latLng)
+            mMap.addMarker(MarkerOptions().position(latLng).title(place.name))
+        }
     }
 }

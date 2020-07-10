@@ -76,11 +76,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }.start()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopService()
-    }
-
     private fun checkPermissions() {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
@@ -108,6 +103,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         } else {
             val toast: Toast = Toast.makeText(applicationContext, "No no no no permissions! ${grantResults[0]}", Toast.LENGTH_LONG)
             toast.show()
+            val intent = Intent(this, FailedPermissionsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -117,11 +114,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         ContextCompat.startForegroundService(this, serviceIntent)
     }
 
-    fun stopService() {
-        val serviceIntent = Intent(this, ForegroundService::class.java)
-        stopService(serviceIntent)
-    }
-
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -129,15 +121,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             println("observing")
             updateMap() }) //TODO move it elsewhere
 
-        val boundsBuilder = LatLngBounds.Builder()
-        val map:Group? = mainActivityViewModel.getGroup().value
-        for (place in map!!.members) {
-            val latLng = LatLng(place!!.gps.latitude, place.gps.longitude)
-            boundsBuilder.include(latLng)
-            mMap.addMarker(MarkerOptions().position(latLng).title(place.name))
-        }
+        updateMap()
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 1000, 1000, 0))
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 1000, 1000, 0))
     }
 
     private fun updateMap() {
@@ -145,10 +131,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         println("updating map")
         val boundsBuilder = LatLngBounds.Builder()
         val map:Group? = mainActivityViewModel.getGroup().value
-        for (place in map!!.members) {
-            val latLng = LatLng(place!!.gps.latitude, place.gps.longitude)
-            boundsBuilder.include(latLng)
-            mMap.addMarker(MarkerOptions().position(latLng).title(place.name))
+        if (map != null) {
+            for (place in map.members) {
+                if (place != null) {
+                    val latLng = LatLng(place.gps.latitude, place.gps.longitude)
+                    boundsBuilder.include(latLng)
+                    mMap.addMarker(MarkerOptions().position(latLng).title(place.name))
+                }
+            }
         }
     }
 }

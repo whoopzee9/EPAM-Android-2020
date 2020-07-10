@@ -23,19 +23,8 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
-        mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance()
         init()
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        val currentUser = mAuth.currentUser
-        if (currentUser != null) {
-           // val intent = Intent(this, GroupActivity::class.java)
-            val intent = Intent(this, GroupActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun init() {
@@ -44,14 +33,16 @@ class AuthActivity : AppCompatActivity() {
     }
 
     fun onClickSignIn(view: View) {
-        signIn(etEmail!!.text.toString().trim(), etPassword!!.text.toString().trim())
+        if (etEmail != null && etPassword != null) {
+            signIn(etEmail?.text.toString().trim(), etPassword?.text.toString().trim())
+        }
         //println("Loggggggg" + etEmail!!.text.toString() + " " + etPassword!!.text.toString())
         // signIn("daniilxt.dev@gmail.ru", "1234")
     }
 
     private fun signIn(email: String, password: String) {
-        if (etEmail!!.text.toString().isNotEmpty()) {
-            println("Loggggggg $email $password")
+        if (email.isNotEmpty()) {
+            //println("Loggggggg $email $password")
 
             mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->

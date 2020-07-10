@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.university.epam_android_2020.auth.AuthActivity
 import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.user_data.CurrentGroup
 import com.university.epam_android_2020.user_data.Gps
@@ -25,13 +26,21 @@ class GroupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_group)
 
+        val mAuth = FirebaseAuth.getInstance()
+        val currentUser = mAuth.currentUser
+        if (currentUser == null) {
+            val intent = Intent(applicationContext, AuthActivity::class.java)
+            startActivity(intent)
+            return
+        }
+
         supportActionBar?.title = "Group list"
 
         rvMaps.layoutManager = LinearLayoutManager(this)
         mFirebaseDB.getAllGroups {
             rvMaps.adapter = MapsAdapter(this, it, object: MapsAdapter.OnClickListener {
                 override fun onItemClick(position: Int) {
-                    val intent = Intent(this@GroupActivity, MainActivity::class.java)
+                    val intent = Intent(applicationContext, MainActivity::class.java)
                     val groupName = it[position]
                     val currentGroup = CurrentGroup.instance
                     if (groupName != null) {

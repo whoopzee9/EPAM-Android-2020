@@ -31,12 +31,10 @@ class Registration : AppCompatActivity() {
     private fun init() {
         etName = findViewById(R.id.et_reg_name)
         etRegEmail = findViewById(R.id.et_restore_email)
-        // etRegPassword = findViewById(R.id.et_reg_password)
-        etRegPassword = findViewById<View>(R.id.et_reg_password) as EditText
+        etRegPassword = findViewById(R.id.et_reg_password)
         etRegConfPassword = findViewById(R.id.et_password_confirm)
 
         mAuth = FirebaseAuth.getInstance()
-
     }
 
     fun onClickSubmit(view: View) {
@@ -44,24 +42,25 @@ class Registration : AppCompatActivity() {
             && etRegEmail?.text!!.isNotEmpty()
             && etRegPassword?.text!!.isNotEmpty()
             && etRegConfPassword?.text!!.isNotEmpty()
-            && (etRegPassword?.text!!.toString().equals(etRegConfPassword?.text!!.toString()))
+            && (etRegPassword?.text!!.toString() == etRegConfPassword?.text!!.toString())
         ) {
-            val email = etRegEmail!!.text.toString()
-            val password = etRegEmail!!.text.toString()
             mAuth!!
-                .createUserWithEmailAndPassword(email, password)
+                .createUserWithEmailAndPassword(etRegEmail!!.text.toString(), etRegEmail!!.text.toString())
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         mAuth = FirebaseAuth.getInstance()
                         val user = mAuth!!.currentUser
                         println("??? ${user!!.uid}")
                         val userData = User(
-                            user.uid, etName!!.text.toString(), user.email, "http",
+                            user.uid,
+                            etName!!.text.toString(),
+                            etRegEmail!!.text.toString(),
+                            "http",
                             Gps("${Calendar.getInstance().time}", 0.0, 0.0)
                         )
-                       // mFirebaseDB.createUser(userData)
+                        // mFirebaseDB.createUser(userData)
                         mFirebaseDB.createUserFromReg(user.uid, userData)
-                        Toast.makeText(this, "Success registration", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Success registration!", Toast.LENGTH_SHORT).show()
                         sendEmailVerification();
                         finish()
                     } else {
@@ -70,9 +69,10 @@ class Registration : AppCompatActivity() {
                 }
 
         } else {
-            Toast.makeText(this, "Check the fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Check the fields.", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun sendEmailVerification() {
         val user = mAuth!!.currentUser
         user!!.sendEmailVerification()
@@ -81,7 +81,7 @@ class Registration : AppCompatActivity() {
                 if (task.isSuccessful) {
                     Toast.makeText(
                         applicationContext,
-                        "Verification email sent to " + user.email!!,
+                        "Verification email sent to ${user.email}!",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {

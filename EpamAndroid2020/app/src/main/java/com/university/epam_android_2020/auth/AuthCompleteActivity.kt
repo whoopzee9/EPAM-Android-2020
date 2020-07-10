@@ -55,9 +55,7 @@ class AuthCompleteActivity : AppCompatActivity() {
 
         if (etTextField!!.text.isNotEmpty()) {
             mFirebaseDB.createData(etTextField!!.text.toString(), "test/tedt/test")
-
         }
-
     }
 
     fun onClickSignOut(view: View) {

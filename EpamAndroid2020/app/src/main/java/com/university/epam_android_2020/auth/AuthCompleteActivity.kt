@@ -93,7 +93,7 @@ class AuthCompleteActivity : AppCompatActivity() {
 
     }
 
-    private fun printUserFromData(user: MutableList<User?>) {
+    private fun printUserFromData(user: MutableList<User>) {
         for (item in user) {
             println("FROM USER DATA $item")
         }

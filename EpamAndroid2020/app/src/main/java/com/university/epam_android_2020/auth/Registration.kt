@@ -52,12 +52,15 @@ class Registration : AppCompatActivity() {
                 .createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
+                        mAuth = FirebaseAuth.getInstance()
                         val user = mAuth!!.currentUser
+                        println("??? ${user!!.uid}")
                         val userData = User(
-                            user!!.uid, etName!!.text.toString(), user.email, "http",
+                            user.uid, etName!!.text.toString(), user.email, "http",
                             Gps("${Calendar.getInstance().time}", 0.0, 0.0)
                         )
-                        mFirebaseDB.createUser(userData)
+                       // mFirebaseDB.createUser(userData)
+                        mFirebaseDB.createUserFromReg(user.uid, userData)
                         Toast.makeText(this, "Success registration", Toast.LENGTH_SHORT).show()
                         sendEmailVerification();
                         finish()

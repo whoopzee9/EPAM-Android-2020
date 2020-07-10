@@ -17,7 +17,7 @@ interface ExtensionsCRUD {
 
     fun createUser(userData: User)
     fun getUserData(callBack: (User?) -> Unit)
-    fun getAllUsers(callBack: (MutableList<User?>) -> Unit)
+    fun getAllUsers(callBack: (MutableList<User>) -> Unit)
     fun deleteUserData(userPath: String)
 
     fun updateData(value: String?, path: String)

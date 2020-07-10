@@ -162,9 +162,9 @@ class FirebaseDB : ExtensionsCRUD {
      * @param callBack Returned callback param of type MutableList<User?>
      * @return callback Return class MutableList<User?> with list of user.
      */
-    override fun getAllUsers(callBack: (MutableList<User?>) -> Unit) {
+    override fun getAllUsers(callBack: (MutableList<User>) -> Unit) {
         var data: User?
-        val userData: MutableList<User?> = mutableListOf()
+        val userData: MutableList<User> = mutableListOf()
         usersRef
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -289,5 +289,15 @@ class FirebaseDB : ExtensionsCRUD {
                     }
                 })
         }
+    }
+
+    /**
+     * Adds a new user to the database.
+     *
+     * @param userData User data of the "User" type.
+     */
+    fun createUserFromReg(uid: String, userData: User) {
+        usersRef.child(uid).setValue(userData)
+
     }
 }

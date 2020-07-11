@@ -55,9 +55,7 @@ class AuthCompleteActivity : AppCompatActivity() {
 
         if (etTextField!!.text.isNotEmpty()) {
             mFirebaseDB.createData(etTextField!!.text.toString(), "test/tedt/test")
-
         }
-
     }
 
     fun onClickSignOut(view: View) {
@@ -93,7 +91,7 @@ class AuthCompleteActivity : AppCompatActivity() {
 
     }
 
-    private fun printUserFromData(user: MutableList<User?>) {
+    private fun printUserFromData(user: MutableList<User>) {
         for (item in user) {
             println("FROM USER DATA $item")
         }
@@ -130,7 +128,14 @@ class AuthCompleteActivity : AppCompatActivity() {
     }
 
     fun onClickJoinGroup(view: View) {
-        mFirebaseDB.joinToGroup(etTextInput!!.text.toString())
+      //  mFirebaseDB.joinToGroup(etTextInput!!.text.toString())
+        println("USER ID + " + user!!.uid)
+        mFirebaseDB.listenChange {listenChangeFromCall(it)}
 
+
+    }
+
+    private fun listenChangeFromCall(it: User?) {
+        println("USER IS : $it")
     }
 }

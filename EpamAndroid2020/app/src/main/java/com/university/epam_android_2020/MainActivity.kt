@@ -18,8 +18,10 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.services.ForegroundService
 import com.university.epam_android_2020.user_data.Group
+import com.university.epam_android_2020.user_data.User
 import com.university.epam_android_2020.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -27,11 +29,14 @@ const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
+
     //private lateinit var map: MapOfUsers
     private lateinit var mainActivityViewModel: MainActivityViewModel
 
+    private var mFirebaseDB = FirebaseDB()
+
     //redo
-    companion object{
+    companion object {
         private var isFirstStart = true
     }
 
@@ -50,45 +55,54 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val intent = Intent(this, GroupActivity::class.java)
             startActivity(intent)
         } else {*/
-            val mapNew = intent.getParcelableExtra(EXTRA_USER_MAP) as Group
+        val mapNew = intent.getParcelableExtra(EXTRA_USER_MAP) as Group
 
-            mainActivityViewModel.setGroup(mapNew)
+        mainActivityViewModel.setGroup(mapNew)
 
-            supportActionBar?.title = mapNew.name
+        supportActionBar?.title = mapNew.name
 
-            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-            val mapFragment =
-                supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-            mapFragment.getMapAsync(this)
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        val mapFragment =
+            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
-            menuButton.setOnClickListener {
-                val intent = Intent(this, GroupActivity::class.java)
-                startActivity(intent)
-            }
+        menuButton.setOnClickListener {
+            val intent = Intent(this, GroupActivity::class.java)
+            startActivity(intent)
+        }
         //}
 
-        Thread {
-            while (true) {
+/*        Thread {
+*//*            while (true) {
                 Thread.sleep(2000)
                 println("thread!!")
                 mainActivityViewModel.updateGroup()
-            }
-        }.start()
+
+            }*//*
+        }.start()*/
     }
 
     private fun checkPermissions() {
-        if (ActivityCompat.checkSelfPermission(this,
+        if (ActivityCompat.checkSelfPermission(
+                this,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(this,
+            ActivityCompat.checkSelfPermission(
+                this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ), 100)
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ), 100
+            )
         } else {
             startService()
+            mFirebaseDB.listenChange { mainActivityViewModel.listenChange(it) }
+            // mainActivityViewModel.listenChange()
+
         }
     }
 
@@ -101,10 +115,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         if (requestCode == 100 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             checkPermissions()
         } else {
-            val toast: Toast = Toast.makeText(applicationContext, "No no no no permissions! ${grantResults[0]}", Toast.LENGTH_LONG)
+            val toast: Toast = Toast.makeText(
+                applicationContext,
+                "No no no no permissions! ${grantResults[0]}",
+                Toast.LENGTH_LONG
+            )
             toast.show()
             val intent = Intent(this, FailedPermissionsActivity::class.java)
             startActivity(intent)
+
         }
     }
 
@@ -119,7 +138,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mainActivityViewModel.getGroup().observe(this, Observer {
             println("observing")
-            updateMap() }) //TODO move it elsewhere
+            updateMap()
+        }) //TODO move it elsewhere
 
         updateMap()
 
@@ -130,7 +150,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.clear()
         println("updating map")
         val boundsBuilder = LatLngBounds.Builder()
-        val map:Group? = mainActivityViewModel.getGroup().value
+        val map: Group? = mainActivityViewModel.getGroup().value
         if (map != null) {
             for (place in map.members) {
                 if (place != null) {

@@ -11,7 +11,7 @@ interface ExtensionsCRUD {
     fun createPath(path: String)
     fun createGroup(groupName: String)
     fun joinToGroup(groupName: String)
-    fun getAllGroups(callBack: (MutableList<String?>)->Unit)
+    fun getAllGroups(callBack: (MutableList<String?>) -> Unit)
 
     fun createData(value: String?, path: String)
 
@@ -23,6 +23,9 @@ interface ExtensionsCRUD {
     fun updateData(value: String?, path: String)
 
     fun deleteFromGroup(groupName: String?)
-    fun deleteFromAllGroups(userID:String)
-    fun getUsersFromGroup(groupName: String, callBack: (MutableList<User?>)->Unit)
+    fun deleteFromAllGroups(userID: String)
+    fun getUsersFromGroup(groupName: String, callBack: (MutableList<User?>) -> Unit)
+    fun getListUsersFromGroup(groupName: String, callBack: (ArrayList<String?>) -> Unit)
+
+    fun listenChange(callBack: ((User?) -> Unit))
 }

@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.university.epam_android_2020.repositories.GroupRepository
 import com.university.epam_android_2020.user_data.CurrentGroup
 import com.university.epam_android_2020.user_data.Group
+import com.university.epam_android_2020.user_data.User
+import javax.security.auth.callback.Callback
 
-class MainActivityViewModel:ViewModel() {
-    var group:MutableLiveData<Group> = MutableLiveData()
+class MainActivityViewModel : ViewModel() {
+    var group: MutableLiveData<Group> = MutableLiveData()
     var repository = GroupRepository.instance
 
     fun init() {
@@ -23,7 +25,7 @@ class MainActivityViewModel:ViewModel() {
 
     }
 
-    fun getGroup():LiveData<Group> {
+    fun getGroup(): LiveData<Group> {
         return group
     }
 
@@ -41,4 +43,8 @@ class MainActivityViewModel:ViewModel() {
         group.value = data
     }
 
+    //test
+    fun listenChange(it: User?) {
+        updateGroup()
+    }
 }

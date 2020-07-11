@@ -128,7 +128,14 @@ class AuthCompleteActivity : AppCompatActivity() {
     }
 
     fun onClickJoinGroup(view: View) {
-        mFirebaseDB.joinToGroup(etTextInput!!.text.toString())
+      //  mFirebaseDB.joinToGroup(etTextInput!!.text.toString())
+        println("USER ID + " + user!!.uid)
+        mFirebaseDB.listenChange {listenChangeFromCall(it)}
 
+
+    }
+
+    private fun listenChangeFromCall(it: User?) {
+        println("USER IS : $it")
     }
 }

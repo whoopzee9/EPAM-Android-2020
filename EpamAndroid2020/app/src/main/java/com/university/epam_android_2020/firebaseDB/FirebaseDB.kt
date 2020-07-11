@@ -5,6 +5,7 @@ import com.google.firebase.database.*
 import com.university.epam_android_2020.user_data.Gps
 import com.university.epam_android_2020.user_data.User
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class FirebaseDB : ExtensionsCRUD {
@@ -17,7 +18,7 @@ class FirebaseDB : ExtensionsCRUD {
     private var mAuth = FirebaseAuth.getInstance()
 
     //Authenticated user
-    private var user = mAuth.currentUser
+    var user = mAuth.currentUser
 
     /**
      * Creates a new path from string with val true.
@@ -59,7 +60,7 @@ class FirebaseDB : ExtensionsCRUD {
      * @return callback Return class MutableList<String?> with list of groups.
      */
     override fun getAllGroups(callBack: (MutableList<String?>) -> Unit) {
-        val grList:MutableList<String?> = mutableListOf()
+        val grList: MutableList<String?> = mutableListOf()
         groupsRef
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -291,6 +292,26 @@ class FirebaseDB : ExtensionsCRUD {
         }
     }
 
+    override fun getListUsersFromGroup(groupName: String, callBack: (ArrayList<String?>) -> Unit) {
+        val usersList: ArrayList<String?> = arrayListOf()
+        groupsRef.child(groupName)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (item in snapshot.children) {
+                            usersList.add(item.key)
+                        }
+                        println("IDDDDD"+ usersList)
+                        callBack(usersList)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Failed to read value
+                }
+            })
+    }
+
     /**
      * Adds a new user to the database.
      *
@@ -298,6 +319,28 @@ class FirebaseDB : ExtensionsCRUD {
      */
     fun createUserFromReg(uid: String, userData: User) {
         usersRef.child(uid).setValue(userData)
+
+    }
+
+    //TODO fix and set description
+    override fun listenChange(callBack: ((User?) -> Unit)) {
+        val messageListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val message = dataSnapshot.getValue(User::class.java)
+                    callBack(message)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+            }
+        }
+
+        // id users
+        var listUserPath = listOf(user!!.uid, "0MdOWT14PrP6eESIOtqOQ93REA62")
+        for (item in listUserPath) {
+            usersRef.child(item).addValueEventListener(messageListener)
+        }
 
     }
 }

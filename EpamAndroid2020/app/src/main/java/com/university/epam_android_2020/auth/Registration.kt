@@ -1,11 +1,13 @@
 package com.university.epam_android_2020.auth
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.university.epam_android_2020.GroupActivity
 import com.university.epam_android_2020.R
 import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.user_data.Gps
@@ -58,10 +60,10 @@ class Registration : AppCompatActivity() {
                             "http",
                             Gps("${Calendar.getInstance().time}", 0.0, 0.0)
                         )
-                        // mFirebaseDB.createUser(userData)
                         mFirebaseDB.createUserFromReg(user.uid, userData)
                         Toast.makeText(this, "Success registration!", Toast.LENGTH_SHORT).show()
                         sendEmailVerification();
+                        startActivity(Intent(this,GroupActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this, "Authentication failed!", Toast.LENGTH_SHORT).show()

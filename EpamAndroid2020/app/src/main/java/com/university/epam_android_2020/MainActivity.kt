@@ -3,6 +3,7 @@ package com.university.epam_android_2020
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.IntentSender
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +12,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -20,6 +25,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.services.ForegroundService
+import com.university.epam_android_2020.user_data.CurrentGroup
 import com.university.epam_android_2020.user_data.Group
 import com.university.epam_android_2020.user_data.User
 import com.university.epam_android_2020.viewmodels.MainActivityViewModel
@@ -34,11 +40,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mainActivityViewModel: MainActivityViewModel
 
     private var mFirebaseDB = FirebaseDB()
-
-    //redo
-    companion object {
-        private var isFirstStart = true
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,8 +100,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 ), 100
             )
         } else {
+            println("starting service!!!")
             startService()
-            mFirebaseDB.listenChange { mainActivityViewModel.listenChange(it) }
+            //mFirebaseDB.listenChange { mainActivityViewModel.listenChange(it)
+            mFirebaseDB.getListUsersFromGroup(CurrentGroup.instance.groupName) {
+                mFirebaseDB.listenChange(it) { mainActivityViewModel.listenChange(it)
+            }
+            }
             // mainActivityViewModel.listenChange()
 
         }

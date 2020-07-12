@@ -27,5 +27,5 @@ interface ExtensionsCRUD {
     fun getUsersFromGroup(groupName: String, callBack: (MutableList<User?>) -> Unit)
     fun getListUsersFromGroup(groupName: String, callBack: (ArrayList<String?>) -> Unit)
 
-    fun listenChange(callBack: ((User?) -> Unit))
+    fun listenChange(users: ArrayList<String?>, callBack: ((User?) -> Unit))
 }

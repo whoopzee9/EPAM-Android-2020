@@ -301,7 +301,7 @@ class FirebaseDB : ExtensionsCRUD {
                         for (item in snapshot.children) {
                             usersList.add(item.key)
                         }
-                        println("IDDDDD"+ usersList)
+                        println("IDDDDD $usersList")
                         callBack(usersList)
                     }
                 }
@@ -323,7 +323,7 @@ class FirebaseDB : ExtensionsCRUD {
     }
 
     //TODO fix and set description
-    override fun listenChange(callBack: ((User?) -> Unit)) {
+    override fun listenChange(users: ArrayList<String?>, callBack: ((User?) -> Unit)) {
         val messageListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -337,9 +337,12 @@ class FirebaseDB : ExtensionsCRUD {
         }
 
         // id users
-        var listUserPath = listOf(user!!.uid, "0MdOWT14PrP6eESIOtqOQ93REA62")
+        //var listUserPath = listOf(user!!.uid, "0MdOWT14PrP6eESIOtqOQ93REA62")
+        var listUserPath = users
         for (item in listUserPath) {
-            usersRef.child(item).addValueEventListener(messageListener)
+            if (item != null) {
+                usersRef.child(item).addValueEventListener(messageListener)
+            }
         }
 
     }

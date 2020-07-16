@@ -1,20 +1,21 @@
 package com.university.epam_android_2020.repositories
 
-import androidx.lifecycle.MutableLiveData
-import com.university.epam_android_2020.models.MapOfUsers
+import com.university.epam_android_2020.firebaseDB.FirebaseDB
+import com.university.epam_android_2020.user_data.CurrentGroup
+import com.university.epam_android_2020.user_data.User
 
 class GroupRepository {
-    var instance:GroupRepository? = null
-        get() {
-        if (field == null) {
-            field = GroupRepository()
-        }
-        return field
+    companion object {
+        var instance = GroupRepository()
     }
 
-    fun getGroupFromDB():MutableLiveData<MapOfUsers> {
+    var mFirebaseDB = FirebaseDB()
+
+    fun getGroupFromDB(callBack: (MutableList<User?>) -> Unit) {
         //TODO somehow retrieve data from DB
-        val data:MutableLiveData<MapOfUsers> = MutableLiveData()
-        return data
+        val current = CurrentGroup.instance
+        if (current.groupName.isNotEmpty()) {
+            mFirebaseDB.getUsersFromGroup(current.groupName, callBack)
+        }
     }
 }

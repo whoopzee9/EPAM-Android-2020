@@ -12,11 +12,12 @@ import android.os.Build
 import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.app.NotificationCompat
+import com.university.epam_android_2020.FailedPermissionsActivity
+import com.university.epam_android_2020.MainActivity
+import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.gps.LocationListenerInterface
 import com.university.epam_android_2020.gps.MyLocationListener
-import com.university.epam_android_2020.MainActivity as MainActivity
 
 
 class ForegroundService: Service(), LocationListenerInterface {
@@ -24,22 +25,30 @@ class ForegroundService: Service(), LocationListenerInterface {
     private val CHANNEL_ID = "ForegroundServiceChannel"
     private lateinit var locationManager: LocationManager
     private val myLocationListener: MyLocationListener = MyLocationListener()
+    private val mFirebaseDB = FirebaseDB()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val input = intent!!.getStringExtra("inputExtra")
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         myLocationListener.locationListenerInterface = this
         createNotificationChannel()
-        val notificationIntent = Intent(this, MainActivity::class.java)
+        val notificationIntent = Intent(applicationContext, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
-            this,
+            applicationContext,
             0, notificationIntent, 0
         )
+
+        val deleteIntent = Intent(this, ActionReceiver::class.java)
+        //deleteIntent.action = "com.university.epam_android_2020"
+        //val deletePendingIntent = PendingIntent.getService(this, 0, deleteIntent, 0)
+        val deletePendingIntent = PendingIntent.getBroadcast(this, 1, deleteIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Foreground Service")
             .setContentText(input)
-            //.setSmallIcon(R.drawable.ic_stat_name)
+            .setSmallIcon(R.drawable.ic_menu_view)
             .setContentIntent(pendingIntent)
+            .addAction(R.drawable.ic_delete, "Delete", deletePendingIntent)
             .build()
         startForeground(1, notification)
 
@@ -74,13 +83,14 @@ class ForegroundService: Service(), LocationListenerInterface {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0F, myLocationListener)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2, 2F, myLocationListener)
         } else {
             val toast: Toast = Toast.makeText(applicationContext, "No permissions(foreground)!", Toast.LENGTH_LONG)
             toast.show()
+
+            val intent1 = Intent(this, FailedPermissionsActivity::class.java)
+            startActivity(intent1)
         }
-
-
 
         return START_NOT_STICKY
     }
@@ -106,5 +116,6 @@ class ForegroundService: Service(), LocationListenerInterface {
 
     override fun onLocationChanged(location: Location?) {
         println("location changed to ${location!!.latitude} , ${location.longitude}")
+        mFirebaseDB.setLocation(location!!.longitude, location.latitude)
     }
 }

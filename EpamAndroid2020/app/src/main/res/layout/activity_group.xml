@@ -29,4 +29,19 @@
         app:srcCompat="@android:drawable/ic_input_add"
         android:focusable="true" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addPhoto"
+        android:layout_width="56dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="128dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="onClickAddPhoto"
+        android:tint="#FFFFFF"
+        app:backgroundTint="#821E82"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_camera" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

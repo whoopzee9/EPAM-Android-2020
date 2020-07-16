@@ -53,11 +53,12 @@ class Registration : AppCompatActivity() {
                         mAuth = FirebaseAuth.getInstance()
                         val user = mAuth!!.currentUser
                         println("??? ${user!!.uid}")
+                        val defaultUrl = mFirebaseDB.getUrlDefaultPhoto()
                         val userData = User(
                             user.uid,
                             etName!!.text.toString(),
                             etRegEmail!!.text.toString(),
-                            "http",
+                            defaultUrl,
                             Gps("${Calendar.getInstance().time}", 0.0, 0.0)
                         )
                         mFirebaseDB.createUserFromReg(user.uid, userData)

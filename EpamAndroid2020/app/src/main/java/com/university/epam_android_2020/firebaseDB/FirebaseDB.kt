@@ -1,7 +1,9 @@
 package com.university.epam_android_2020.firebaseDB
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
 import com.university.epam_android_2020.user_data.Gps
 import com.university.epam_android_2020.user_data.User
 import java.util.*
@@ -13,6 +15,7 @@ class FirebaseDB : ExtensionsCRUD {
     private var dataRef = FirebaseDatabase.getInstance().reference
     private var groupsRef = FirebaseDatabase.getInstance().getReference("GROUP")
     private var usersRef = FirebaseDatabase.getInstance().getReference("USERS")
+    private var storageRef = FirebaseStorage.getInstance().reference
 
     //Auth
     private var mAuth = FirebaseAuth.getInstance()
@@ -345,5 +348,21 @@ class FirebaseDB : ExtensionsCRUD {
             }
         }
 
+    }
+
+    override fun putPhoto(uri: Uri, userID: String) {
+        val path = storageRef.child("profile_image").child(userID)
+        path.putFile(uri)
+    }
+
+    override fun setPhoto(userID: String) {
+        val path = storageRef.child("profile_image").child(userID)
+        val url = path.downloadUrl.toString()
+        usersRef.child(user!!.uid).child("photo").setValue(url)
+    }
+
+    override fun getUrlDefaultPhoto() : String {
+        val url = storageRef.child("default_user_icon.jpg").downloadUrl.toString()
+        return url
     }
 }

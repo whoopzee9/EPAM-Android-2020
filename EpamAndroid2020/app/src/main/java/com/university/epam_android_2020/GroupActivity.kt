@@ -1,23 +1,24 @@
 package com.university.epam_android_2020
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import com.university.epam_android_2020.auth.AuthActivity
 import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.user_data.CurrentGroup
-import com.university.epam_android_2020.user_data.Gps
 import com.university.epam_android_2020.user_data.Group
-import com.university.epam_android_2020.user_data.User
 import kotlinx.android.synthetic.main.activity_group.*
-import java.util.*
 
 class GroupActivity : AppCompatActivity() {
     val mFirebaseDB = FirebaseDB()
@@ -88,6 +89,30 @@ class GroupActivity : AppCompatActivity() {
 
             //need add extra map
             dialog.dismiss()
+        }
+    }
+
+    fun onClickAddPhoto(view: View) {
+        if (mFirebaseDB.user != null) {
+            CropImage.activity()
+                .setAspectRatio(1, 1)
+                .setRequestedSize(600, 600)
+                .setCropShape(CropImageView.CropShape.OVAL)
+                .start(this)
+        } else {
+            Toast.makeText(this, "Image was changed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_CANCELED) {
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
+                val uri = CropImage.getActivityResult(data).uri
+                val user = mFirebaseDB.user
+                mFirebaseDB.putPhoto(uri, user!!.uid)
+                mFirebaseDB.setPhoto(user.uid)
+            }
         }
     }
 }

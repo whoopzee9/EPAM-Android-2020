@@ -2,32 +2,34 @@ package com.university.epam_android_2020
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
-import com.google.android.gms.maps.CameraUpdateFactory
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.university.epam_android_2020.firebaseDB.FirebaseDB
 import com.university.epam_android_2020.services.ForegroundService
 import com.university.epam_android_2020.user_data.CurrentGroup
 import com.university.epam_android_2020.user_data.Group
-import com.university.epam_android_2020.user_data.User
 import com.university.epam_android_2020.viewmodels.MainActivityViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -157,14 +159,53 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         println("updating map")
         val boundsBuilder = LatLngBounds.Builder()
         val map: Group? = mainActivityViewModel.getGroup().value
+        val mFirebaseDB = FirebaseDB()
         if (map != null) {
             for (place in map.members) {
                 if (place != null) {
                     val latLng = LatLng(place.gps.latitude, place.gps.longitude)
                     boundsBuilder.include(latLng)
-                    mMap.addMarker(MarkerOptions().position(latLng).title(place.name))
+                    getMarkerIcon(this, place.photo!!) { task1 ->
+                        val options = MarkerOptions()
+                            .position(latLng)
+                            .title(place.name)
+                            .icon(task1)
+                        mMap.addMarker(options)
+                    }
                 }
             }
         }
+    }
+
+    private fun getMarkerIcon(context: Context, url: String, listener: (BitmapDescriptor) -> Unit) {
+        val marker: LayoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val markerView: View = marker.inflate(R.layout.map_marker, null)
+        val markerPhoto: ImageView = markerView.findViewById(R.id.map_photo)
+        Glide.with(context)
+            .asBitmap()
+            .load(url)
+            .into(object : CustomTarget<Bitmap>() {
+
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    markerPhoto.setImageBitmap(resource)
+                    listener.invoke(BitmapDescriptorFactory.fromBitmap(getBitmapFromView(markerView)))
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+
+                }
+            })
+    }
+
+    private fun getBitmapFromView(view: View): Bitmap {
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+        view.draw(canvas)
+        return bitmap
     }
 }

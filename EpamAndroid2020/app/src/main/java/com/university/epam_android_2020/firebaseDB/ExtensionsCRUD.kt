@@ -1,5 +1,6 @@
 package com.university.epam_android_2020.firebaseDB
 
+import android.net.Uri
 import com.university.epam_android_2020.user_data.Gps
 import com.university.epam_android_2020.user_data.User
 
@@ -28,4 +29,8 @@ interface ExtensionsCRUD {
     fun getListUsersFromGroup(groupName: String, callBack: (ArrayList<String?>) -> Unit)
 
     fun listenChange(users: ArrayList<String?>, callBack: ((User?) -> Unit))
+
+    fun putPhoto(uri: Uri, userID: String)
+    fun setPhoto(userID: String)
+    fun getUrlDefaultPhoto() : String
 }

@@ -53,14 +53,22 @@ class Registration : AppCompatActivity() {
                         mAuth = FirebaseAuth.getInstance()
                         val user = mAuth!!.currentUser
                         println("??? ${user!!.uid}")
-                        val defaultUrl = mFirebaseDB.getUrlDefaultPhoto()
                         val userData = User(
                             user.uid,
                             etName!!.text.toString(),
                             etRegEmail!!.text.toString(),
-                            defaultUrl,
+                            "http",
                             Gps("${Calendar.getInstance().time}", 0.0, 0.0)
                         )
+                        mFirebaseDB.getStorageRef().child("default_user_icon.jpg")
+                            .downloadUrl
+                            .addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    val defaultUrl = it.result.toString()
+                                    mFirebaseDB.getUsersRef().child(user.uid).child("photo")
+                                        .setValue(defaultUrl)
+                                }
+                            }
                         mFirebaseDB.createUserFromReg(user.uid, userData)
                         Toast.makeText(this, "Success registration!", Toast.LENGTH_SHORT).show()
                         sendEmailVerification();

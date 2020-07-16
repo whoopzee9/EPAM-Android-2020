@@ -44,7 +44,7 @@ class AuthActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         Toast.makeText(this, " Welcome back!", Toast.LENGTH_SHORT).show()
                         startActivity(Intent(this, GroupActivity::class.java))
-                        startActivity(Intent(this, AuthCompleteActivity::class.java))
+//                        startActivity(Intent(this, AuthCompleteActivity::class.java))
                     } else {
                         Toast.makeText(this, "Auth failed!", Toast.LENGTH_SHORT).show()
                     }

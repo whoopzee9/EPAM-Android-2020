@@ -29,8 +29,4 @@ interface ExtensionsCRUD {
     fun getListUsersFromGroup(groupName: String, callBack: (ArrayList<String?>) -> Unit)
 
     fun listenChange(users: ArrayList<String?>, callBack: ((User?) -> Unit))
-
-    fun putPhoto(uri: Uri, userID: String)
-    fun setPhoto(userID: String)
-    fun getUrlDefaultPhoto() : String
 }

@@ -104,14 +104,37 @@ class GroupActivity : AppCompatActivity() {
         }
     }
 
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode != Activity.RESULT_CANCELED) {
+//            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
+//                val uri = CropImage.getActivityResult(data).uri
+//                val user = mFirebaseDB.user
+//                mFirebaseDB.putPhoto(uri, user!!.uid)
+//                mFirebaseDB.setPhoto(user.uid)
+//            }
+//        }
+//    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_CANCELED) {
             if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && data != null) {
                 val uri = CropImage.getActivityResult(data).uri
+                val storageRef = mFirebaseDB.getStorageRef()
                 val user = mFirebaseDB.user
-                mFirebaseDB.putPhoto(uri, user!!.uid)
-                mFirebaseDB.setPhoto(user.uid)
+                val path = storageRef.child("profile_image").child(user!!.uid)
+                path.putFile(uri).addOnCompleteListener { task1 ->
+                    if (task1.isSuccessful) {
+                        path.downloadUrl.addOnCompleteListener { task2 ->
+                            if (task2.isSuccessful) {
+                                val url = task2.result.toString()
+                                mFirebaseDB.getUsersRef().child(user!!.uid).child("photo")
+                                    .setValue(url)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
